@@ -1,4 +1,4 @@
-# ProjectPortal - Redcap External Module
+# AddValidationTypes - Redcap External Module
 
 ## What does it do?
 
