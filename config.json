@@ -1,0 +1,19 @@
+{
+    "name": "Add Validation Types",
+    "description": "Add and Remove custom validation types at the system admin level",
+    "namespace": "UWMadison\\AddValidationTypes",
+    "authors": [
+        {
+            "name": "Adam Nunez",
+            "email": "Adam.Nunez@ctri.wisc.edu",
+            "institution": "UW Madison - Center for Tobacco Research and Intervention "
+        }
+    ],
+    "permissions": [
+        "redcap_control_center"
+    ],
+    "framework-version": 10,
+    "compatibility": {
+        "redcap-version-min": "12.4.1"
+    }
+}
