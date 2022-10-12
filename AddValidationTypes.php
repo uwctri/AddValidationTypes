@@ -49,6 +49,7 @@ class AddValidationTypes extends AbstractExternalModule
 
     private function allValidationTypes()
     {
+        // Grab all data from the validation table and format
         $result = [];
         $sql = $this->query("SELECT * FROM redcap_validation_types", []);
         while ($row = $sql->fetch_assoc()) {
@@ -67,6 +68,7 @@ class AddValidationTypes extends AbstractExternalModule
 
     private function allDataTypes()
     {
+        // Fetch db metadata and parse the enum for data_type col
         $sql = $this->query("SHOW COLUMNS FROM redcap_validation_types LIKE 'data_type'", []);
         $enum = $sql->fetch_assoc()["Type"];
         preg_match("/enum\((.*)\)$/", $enum, $matches);
@@ -112,10 +114,10 @@ class AddValidationTypes extends AbstractExternalModule
         }
 
         // Perform the DB Update and update the EM's setting
-        if (count($errors) == 0) { // TODO this query is failing
+        if (count($errors) == 0) {
             $this->query("
                 INSERT INTO redcap_validation_types (validation_name, validation_label, regex_js, regex_php, data_type, legacy_value, visible)
-                VALUES ('?', '?', '?', '?', '?', NULL, 0)", [$internal, $display, $jsRegex, $phpRegex, $dataType]);
+                VALUES (?, ?, ?, ?, ?, NULL, 0)", [$internal, $display, $jsRegex, $phpRegex, $dataType]);
             $types = $this->emValidationTypes();
             $types[] = $internal;
             $this->setSystemSetting("typesAdded", implode(",", $types));
@@ -131,10 +133,12 @@ class AddValidationTypes extends AbstractExternalModule
         if (!in_array($name, $types)) {
             return ["errors" => ["Bad validation type or type was not added by EM"]];
         }
+
+        // Perform delete
         $this->query(" 
             DELETE from redcap_validation_types 
-            WHERE validation_name = '?'", [$name]);
-        $types = array_diff($types, [$name]);  // TODO this query might also be failing
+            WHERE validation_name = ?", [$name]);
+        $types = array_diff($types, [$name]);
         $this->setSystemSetting('typesAdded', implode(",", $types));
         return ["errors" => []];
     }

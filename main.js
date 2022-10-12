@@ -22,6 +22,9 @@
     }
     .custom-switch.custom-switch-lg .custom-control-input:checked ~ .custom-control-label::after {
         transform: translateX(1rem);
+    }
+    a {
+        color: #3e3e3e;
     }`
 
     // Form to add new validation types
@@ -36,7 +39,7 @@
         <input id="internalName" name="internalName" placeholder="healthcare_mrn" type="text" class="form-control">
     </div>
     <div class="form-group">
-        <label class="font-weight-bold mb-0" for="phpRegex">PHP Regex</label> 
+        <label class="font-weight-bold mb-0" for="phpRegex">PHP Regex <i class="far fa-question-circle text-secondary phpHelp"></i></label> 
         <div class="input-group">
             <div class="input-group-prepend">
                 <div class="input-group-text">/^</div>
@@ -61,7 +64,7 @@
     </div>
     <div class="form-group row mb-0">
         <div class="col-4">
-            <label class="font-weight-bold mb-0" for="dataType">Data Type</label> 
+            <label class="font-weight-bold mb-0" for="dataType">Data Type <i class="far fa-question-circle text-secondary dataTypeHelp"></i></label> 
             <div>
                 <select id="dataType" name="dataType" class="custom-select">
                 </select>
@@ -106,7 +109,7 @@
         }
     }
 
-    // Insert the new form and style the old table
+    // Style old table
     $("head").append(`<style>${css}</style>`)
     $("#val_table tr td").first().attr("colspan", "4")
     $("#val_table tr:not(:first)").append(`
@@ -116,12 +119,26 @@
             </a>
         </td>
     `)
+    ExternalModules.addValTypes.validationTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
+
+    // Insert the new form and setup
     $("#val_table").before(html).show()
+    $(".phpHelp").popover({
+        trigger: "hover",
+        content: `REDCap uses regular expressions on both the client (JS) and server (PHP) sides to verify the format of a field. 
+        Sites like <a href="https://regexr.com/">Regexr</a> can be used to design and easily test both JS and PCRE regex, 
+        but as of 2018 their are not many differances between JS and PCRE regex.`,
+        html: true
+    })
+    $(".dataTypeHelp").popover({
+        trigger: "hover",
+        content: `All validations have a "Data Type" that describes what kind of data is being validated. 
+        The Data Type will determine if a field can be used with certain special functions. 
+        If you are not certain what to use the "text" option is likely the best choice. 
+        The list of options available for a Data Type are determined by Vanderbilt and cannot be changed. `
+    })
     ExternalModules.addValTypes.dataTypes.forEach((el) => $("#dataType").append(new Option(el)))
     $("#dataType").val("text") // Default
-
-    // Remove hidden class on rows that were added by EM
-    ExternalModules.addValTypes.validationTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
 
     // Validations TODO
     // Display Name (alpha, numeric, space, limited special chars ()-:/.)

@@ -10,8 +10,8 @@ You can install the module from the REDCap EM repo or drop it directly in your m
 
 ## Setting up a new validation type
 
-Placeholder
+Validation types require a display name, a unique internal name, and two regular expressions that can be sued to perform validation on fields. Sites like [Regexr](https://regexr.com/) can be used to design and easily test both JS and PCRE (PHP) regex. As of 2018 their are not many differances between JS and PCRE regex, but their are many [sites](https://gist.github.com/CMCDragonkai/6c933f4a7d713ef712145c5eb94a1816) that detail in painful detail any discrepancies. Unless you are using exotic features, you will likely be able to simply test and verify that your pattern works as expected for both PHP and JS.
 
 ## Considered
 
-* Allow users to add regex via an action tag
+* Allow users to add regex via an action tag. If this is added it would mean that the project would need to be enabled on individual projects.
