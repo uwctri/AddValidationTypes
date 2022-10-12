@@ -75,7 +75,7 @@
             </div>
         </div>
         <div class="col-4 text-right">
-            <button id="validationAdd" class="btn btn-primary">Add</button>
+            <button id="validationAdd" class="btn btn-primary mt-3">Add</button>
         </div>
     </div>
 </div>`
