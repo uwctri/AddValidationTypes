@@ -25,9 +25,9 @@ class AddValidationTypes extends AbstractExternalModule
         // Run core code
         $result = ["errors" => ["No valid action"]];
         if ($params["action"] == "add") {
-            $result = $this->addType($params["display"], $params["internal"], $params["php"], $params["js"], $params["dataType"]);
+            $result = $this->addType($params["display"], $params["internal"], $params["phpRegex"], $params["jsRegex"], $params["dataType"]);
         } elseif ($params["action"] == "remove") {
-            $result = $this->removeType($params["internal"]);
+            $result = $this->removeType($params["name"]);
         }
         return json_encode($result);
     }
@@ -69,7 +69,7 @@ class AddValidationTypes extends AbstractExternalModule
     {
         $sql = $this->query("SHOW COLUMNS FROM redcap_validation_types LIKE 'data_type'", []);
         $enum = $sql->fetch_assoc()["Type"];
-        preg_match('/enum\((.*)\)$/', $enum, $matches);
+        preg_match("/enum\((.*)\)$/", $enum, $matches);
         return array_map(function ($value) {
             return trim($value, "'");
         }, explode(',', $matches[1]));
@@ -79,18 +79,18 @@ class AddValidationTypes extends AbstractExternalModule
     {
         $errors = [];
         // Display Name (alpha, numeric, space, limited special chars ()-:/.)
-        if (!preg_match("^[a-zA-Z0-9 ()-:/.]+$", $display)) {
+        if (!preg_match("/^[a-zA-Z0-9 ()-:\/.]+$/", $display)) {
             $errors[] = "Incorrectly formatted display name";
         }
 
         // Internal Name (lower alpha, undersocre, numeric)
-        if (!preg_match("^[a-z0-9_ ]+$", $internal)) {
+        if (!preg_match("/^[a-z0-9_ ]+$/", $internal)) {
             $errors[] = "Incorrectly formatted internal name";
         }
 
-        // TODO PHP Regex (Make sure that \ is escaped)
+        // TODO PHP Regex (Make sure that \ is escaped, they will be wrapped in single quotes)
         // We can validate the PHP regex via var_dump(preg_match('~Valid(Regular)Expression~', '') === false);
-        // TODO JS Regex (Make sure that \ is escaped)
+        // TODO JS Regex (Make sure that \ is escaped, they will be wrapped in single quotes)
 
         // Make sure that display name isn't in use
         $allTypes = $this->allValidationTypes();
@@ -112,10 +112,10 @@ class AddValidationTypes extends AbstractExternalModule
         }
 
         // Perform the DB Update and update the EM's setting
-        if (count($errors) == 0) {
-            // TODO do the db update
-            // INSERT INTO redcap_validation_types (validation_name, validation_label, regex_js, regex_php, data_type, legacy_value, visible)
-            // VALUES (?, ?, ?, ?, ?, NULL, 0);
+        if (count($errors) == 0) { // TODO this query is failing
+            $this->query("
+                INSERT INTO redcap_validation_types (validation_name, validation_label, regex_js, regex_php, data_type, legacy_value, visible)
+                VALUES ('?', '?', '?', '?', '?', NULL, 0)", [$internal, $display, $jsRegex, $phpRegex, $dataType]);
             $types = $this->emValidationTypes();
             $types[] = $internal;
             $this->setSystemSetting("typesAdded", implode(",", $types));
@@ -131,11 +131,10 @@ class AddValidationTypes extends AbstractExternalModule
         if (!in_array($name, $types)) {
             return ["errors" => ["Bad validation type or type was not added by EM"]];
         }
-        $sql = "
+        $this->query(" 
             DELETE from redcap_validation_types 
-            WHERE validation_name = ?";
-        $this->query($sql, [$name]);
-        $types = array_diff($types, [$name]);
+            WHERE validation_name = '?'", [$name]);
+        $types = array_diff($types, [$name]);  // TODO this query might also be failing
         $this->setSystemSetting('typesAdded', implode(",", $types));
         return ["errors" => []];
     }

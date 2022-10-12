@@ -150,7 +150,12 @@
             success: (data) => {
                 console.log(data);
                 if ((typeof data == "string" && data.length === 0) || data.errors.length) {
-                    // TODO show an error
+                    Swal.fire({
+                        icon: "error",
+                        title: "Unable to add Validation Type",
+                        text: "A server error has prevented the validation type from being added to your Redcap instance. Consult the JS console for more information."
+                    })
+                    return
                 }
                 location.reload()
             }
