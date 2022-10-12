@@ -90,9 +90,14 @@ class AddValidationTypes extends AbstractExternalModule
             $errors[] = "Incorrectly formatted internal name";
         }
 
-        // TODO PHP Regex (Make sure that \ is escaped, they will be wrapped in single quotes)
-        // We can validate the PHP regex via var_dump(preg_match('~Valid(Regular)Expression~', '') === false);
-        // TODO JS Regex (Make sure that \ is escaped, they will be wrapped in single quotes)
+        // PHP Regex validation
+        if (preg_match($phpRegex, '') === false) {
+            $errors[] = "Invalid PHP (PCRE) Regex submitted";
+        }
+        $phpRegex = addslashes($phpRegex); // Escapes \,",'
+
+        // JS Regex can't be easily validated here
+        $jsRegex = addslashes($jsRegex); // Escapes \,",'
 
         // Make sure that display name isn't in use
         $allTypes = $this->allValidationTypes();
