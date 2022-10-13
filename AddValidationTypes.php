@@ -10,8 +10,8 @@ class AddValidationTypes extends AbstractExternalModule
     private $inputRegex = [
         "displayName" => "/^[a-zA-Z0-9 ()-:\/.]+$/",
         "internalName" => "/^[a-z0-9_ ]+$/",
-        "phpRegex" => "",
-        "jsRegex" => ""
+        "phpRegex" => "", // Validated with preg_match
+        "jsRegex" => ""   // Validated in js
     ];
 
     public function redcap_control_center()
