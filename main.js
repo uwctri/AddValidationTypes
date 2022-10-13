@@ -171,6 +171,7 @@
                         title: "Unable to add Validation Type",
                         text: "A server error has prevented the validation type from being added to your Redcap instance. Consult the JS console for more information."
                     })
+                    $("#validationAdd").prop("disabled", false)
                     return
                 }
                 location.reload()

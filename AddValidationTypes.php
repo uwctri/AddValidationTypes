@@ -94,17 +94,14 @@ class AddValidationTypes extends AbstractExternalModule
         if (preg_match($phpRegex, '') === false) {
             $errors[] = "Invalid PHP (PCRE) Regex submitted";
         }
-        $phpRegex = addslashes($phpRegex); // Escapes \,",'
-
-        // JS Regex can't be easily validated here
-        $jsRegex = addslashes($jsRegex); // Escapes \,",'
 
         // Make sure that display name isn't in use
         $allTypes = $this->allValidationTypes();
         $displayNames = array_map(function ($key) use ($allTypes) {
-            return $allTypes[$key]["display"];
+            return str_replace(" ", "", strtolower($allTypes[$key]["display"]));
         }, $allTypes);
-        if (in_array($display, $displayNames)) {
+        $trimDisplay = str_replace(" ", "", strtolower($display));
+        if (in_array($trimDisplay, $displayNames)) {
             $errors[] = "Display name too similar to existing name";
         }
 
