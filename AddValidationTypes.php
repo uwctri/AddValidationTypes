@@ -65,8 +65,8 @@ class AddValidationTypes extends AbstractExternalModule
             $result[$row["validation_name"]] = [
                 "internal" => $row["validation_name"],
                 "display" => $row["validation_label"],
-                "phpRegex" => $row["regex_js"],
-                "jsRegex" => $row["regex_php"],
+                // "phpRegex" => $row["regex_php"], // Avoid pulling due to Vanderbilt's 
+                // "jsRegex" => $row["regex_js"],   // analysis throwing errors when we do
                 "dataType" => $row["data_type"],
                 "visible" => $row["visible"] == 1
             ];
