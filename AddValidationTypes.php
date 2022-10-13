@@ -7,6 +7,13 @@ use RestUtility;
 
 class AddValidationTypes extends AbstractExternalModule
 {
+    private $inputRegex = [
+        "displayName" => "/^[a-zA-Z0-9 ()-:\/.]+$/",
+        "internalName" => "/^[a-z0-9_ ]+$/",
+        "phpRegex" => "",
+        "jsRegex" => ""
+    ];
+
     public function redcap_control_center()
     {
         if ($this->isPage('ControlCenter/validation_type_setup.php')) {
@@ -35,7 +42,9 @@ class AddValidationTypes extends AbstractExternalModule
     private function loadSettings()
     {
         return [
-            "validationTypes" => $this->emValidationTypes(),
+            "regex" => $this->inputRegex,
+            "emTypes" => $this->emValidationTypes(),
+            "validationTypes" => $this->allValidationTypes(),
             "dataTypes" => $this->allDataTypes(),
             "csrf"   => $this->getCSRFToken(),
             "router" => $this->getUrl('router.php')
@@ -60,7 +69,6 @@ class AddValidationTypes extends AbstractExternalModule
                 "jsRegex" => $row["regex_php"],
                 "dataType" => $row["data_type"],
                 "visible" => $row["visible"] == 1
-
             ];
         }
         return $result;
@@ -81,12 +89,12 @@ class AddValidationTypes extends AbstractExternalModule
     {
         $errors = [];
         // Display Name (alpha, numeric, space, limited special chars ()-:/.)
-        if (!preg_match("/^[a-zA-Z0-9 ()-:\/.]+$/", $display)) {
+        if (!preg_match($this->inputRegex["displayName"], $display)) {
             $errors[] = "Incorrectly formatted display name";
         }
 
         // Internal Name (lower alpha, undersocre, numeric)
-        if (!preg_match("/^[a-z0-9_ ]+$/", $internal)) {
+        if (!preg_match($this->inputRegex["internalName"], $internal)) {
             $errors[] = "Incorrectly formatted internal name";
         }
 

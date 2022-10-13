@@ -29,7 +29,7 @@
 
     // Form to add new validation types
     const html = `
-<div id="add_validation_form" class="p-4 border rounded mb-4">
+<div id="addValidationForm" class="p-4 border rounded mb-4">
     <div class="form-group">
         <label class="font-weight-bold mb-0" for="displayName">Display Name</label> 
         <input id="displayName" name="displayName" placeholder="HealthCare Inc MRN" type="text" class="form-control">
@@ -97,6 +97,7 @@
 </div>`
 
     const getForm = () => {
+
         // Grab all used values
         const display = $("#displayName").val()
         const internal = $("#internalName").val()
@@ -106,8 +107,7 @@
         const caseSensative = $("#caseSensative").is(":checked")
 
         if (!display || !internal || !phpRegex || !jsRegex) return false
-
-        // TODO check each validation
+        if ($("#addValidationForm .is-invalid").length) return false
 
         phpRegex = `/^${phpRegex}$/`
         jsRegex = `/^${jsRegex}$/`
@@ -122,6 +122,39 @@
         }
     }
 
+    const validateField = (el) => {
+
+        // Check if a value exists
+        const $self = $(el.currentTarget)
+        $self.removeClass("is-invalid")
+        if ($self.val() == "") return
+
+        // Grab all info and do a regex test
+        const value = $self.val()
+        const name = $self.prop('id')
+        const pattern = ExternalModules.addValTypes.regex[name].slice(1, -1)
+        const regex = new RegExp(pattern)
+        if (!regex.test(value)) $self.addClass("is-invalid")
+
+        // Special cases to check for some fields
+        if (name == "jsRegex") {
+            try {
+                new RegExp(value);
+            } catch (e) {
+                $self.addClass("is-invalid")
+            }
+        }
+        if (name == "displayName") {
+            const names = Object.values(ExternalModules.addValTypes.validationTypes).map(el => el['display'].toLowerCase().replaceAll(" ", ""))
+            const trimName = value.toLowerCase().replaceAll(" ", "")
+            if (names.includes(trimName)) $self.addClass("is-invalid")
+        }
+        if (name == "internalName") {
+            const names = Object.keys(ExternalModules.addValTypes.validationTypes)
+            if (names.includes(value)) $self.addClass("is-invalid")
+        }
+    }
+
     // Style old table
     $("head").append(`<style>${css}</style>`)
     $("#val_table tr td").first().attr("colspan", "4")
@@ -132,20 +165,13 @@
             </a>
         </td>
     `)
-    ExternalModules.addValTypes.validationTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
+    ExternalModules.addValTypes.emTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
 
     // Insert the new form and setup
     $("#val_table").before(html).show()
     ExternalModules.addValTypes.dataTypes.forEach((el) => $("#dataType").append(new Option(el)))
     $("#dataType").val("text") // Default
-
-    // Validations TODO
-    // Display Name (alpha, numeric, space, limited special chars ()-:/.)
-    // Internal Name (lower alpha, undersocre, numeric) 
-    // PHP Regex (Make sure that \ is escaped)
-    // JS Regex (Make sure that \ is escaped)
-    // Make sure that display name isn't in use
-    // Make sure that internal name isn't in use
+    $("#addValidationForm input").on("keyup", (el) => validateField(el))
 
     // Setup Add button on new form
     $("#validationAdd").on("click", () => {
