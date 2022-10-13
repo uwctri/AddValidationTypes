@@ -43,7 +43,7 @@
             <i class="far fa-question-circle text-secondary" data-container="body" data-toggle="popover-hover" data-content='
                 REDCap uses regular expressions on both the client (JS) and server (PHP) sides to verify the format of a field. 
                 Sites like <a href="https://regexr.com/">Regexr</a> can be used to design and easily test both JS and PCRE regex, 
-                but as of 2018 their are not many differances between JS and PCRE regex.
+                but as of 2018 there are not many differences between JS and PCRE regex.
             '></i>
         </label> 
         <div class="input-group">
