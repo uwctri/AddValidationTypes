@@ -191,11 +191,22 @@
             // Response returned from server (possible 500 error still)
             success: (data) => {
                 console.log(data)
-                if ((typeof data == "string" && data.length === 0) || data.errors.length) {
+                if ((typeof data == "string" && data.length === 0)) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Unknown Server Error",
+                        text: "An unknown error has occured and the server has failed to respond."
+                    })
+                    $("#validationAdd").prop("disabled", false)
+                    return
+                }
+                if (data.errors.length) {
+                    let msg = "A server error has prevented the validation type from being added to your Redcap instance."
+                    data.errors.forEach((el) => { msg = msg + '\n' + el })
                     Swal.fire({
                         icon: "error",
                         title: "Unable to add Validation Type",
-                        text: "A server error has prevented the validation type from being added to your Redcap instance. Consult the JS console for more information."
+                        text: msg
                     })
                     $("#validationAdd").prop("disabled", false)
                     return
