@@ -15,3 +15,11 @@ Validation types require a display name, a unique internal name, and two regular
 ## Considered
 
 * Allow users to add regex via an action tag. If this is added it would mean that the project would need to be enabled on individual projects.
+* Create a "Regex Repo" that lists Validation Types that users may want
+  * Number List
+  * Integer List
+  * Example email from specific or list of domain(s)
+  * Various barcode standards
+  * URL
+  * IP/MAC address
+  * File path
