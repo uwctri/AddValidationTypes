@@ -172,6 +172,11 @@
     ExternalModules.addValTypes.dataTypes.forEach((el) => $("#dataType").append(new Option(el)))
     $("#dataType").val("text") // Default
     $("#addValidationForm input").on("keyup", (el) => validateField(el))
+    // Populate form with info form URL (Regex Repo)
+    for (const [name, value] of (new URLSearchParams(window.location.search)).entries()) {
+        if (name == "caseSensative") $("#caseSensative").prop("checked", true)
+        $(`#addValidationForm #${name}`).val(value).trigger("keyup")
+    }
 
     // Setup Add button on new form
     $("#validationAdd").on("click", () => {
