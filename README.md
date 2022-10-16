@@ -18,6 +18,8 @@ Validation types require a display name, a unique internal name, and two regular
 * Create a "Regex Repo" that lists Validation Types that users may want
   * Number List
   * Integer List
+  * Positve Integer Range (0-1, 44-59 etc)
+  * Positive Integer Range List
   * Example email from specific or list of domain(s)
   * Various barcode standards
   * URL
