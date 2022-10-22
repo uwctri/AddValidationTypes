@@ -40,7 +40,8 @@ class AddValidationTypes extends AbstractExternalModule
             "regex" => $this->inputRegex,
             "emTypes" => $this->emValidationTypes(),
             "validationTypes" => $this->allValidationTypes(),
-            "dataTypes" => $this->allDataTypes()
+            "dataTypes" => $this->allDataTypes(),
+            "repo" => $this->getUrl("repo.php")
         ]);
         echo "<script>{$this->getJavascriptModuleObjectName()}.settings = {$settings}</script>";
     }

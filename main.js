@@ -93,7 +93,8 @@
             </div>
         </div>
         <div class="col-4 text-right">
-            <button id="validationAdd" class="btn btn-primary mt-3">Add</button>
+            <a href="${module.settings.repo}" class="btn btn-secondary btn-sm mt-4 mr-2 text-white">RegexRepo</a>
+            <a id="validationAdd" class="btn btn-primary mt-3">Add</a>
         </div>
     </div>
 </div>`
