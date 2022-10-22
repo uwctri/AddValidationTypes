@@ -1,5 +1,7 @@
 (() => {
 
+    const module = ExternalModules.UWMadison.AddValidationTypes
+
     // Small amount of css just for the case sensative toggle
     const css = `
     .custom-switch.custom-switch-lg {
@@ -96,6 +98,25 @@
     </div>
 </div>`
 
+    const genericError = (err) => {
+        console.log(err)
+        Swal.fire({
+            icon: "error",
+            title: "Unexpected Server Error",
+            html: "An unknown error has occured and the server has failed to respond.<br>" + err
+        })
+    }
+
+    const responseError = (errs, msg) => {
+        console.log(errs)
+        errs.forEach((el) => { msg = msg + "<br>" + el })
+        Swal.fire({
+            icon: "error",
+            title: "Unable to add Validation Type",
+            html: msg
+        })
+    }
+
     const getForm = () => {
 
         // Grab all used values
@@ -132,25 +153,25 @@
         // Grab all info and do a regex test
         const value = $self.val()
         const name = $self.prop('id')
-        const pattern = ExternalModules.addValTypes.regex[name].slice(1, -1)
+        const pattern = module.settings.regex[name].slice(1, -1)
         const regex = new RegExp(pattern)
         if (!regex.test(value)) $self.addClass("is-invalid")
 
         // Special cases to check for some fields
         if (name == "jsRegex") {
             try {
-                new RegExp(value);
+                new RegExp(value)
             } catch (e) {
                 $self.addClass("is-invalid")
             }
         }
         if (name == "displayName") {
-            const names = Object.values(ExternalModules.addValTypes.validationTypes).map(el => el['display'].toLowerCase().replaceAll(" ", ""))
+            const names = Object.values(module.settings.validationTypes).map(el => el['display'].toLowerCase().replaceAll(" ", ""))
             const trimName = value.toLowerCase().replaceAll(" ", "")
             if (names.includes(trimName)) $self.addClass("is-invalid")
         }
         if (name == "internalName") {
-            const names = Object.keys(ExternalModules.addValTypes.validationTypes)
+            const names = Object.keys(module.settings.validationTypes)
             if (names.includes(value)) $self.addClass("is-invalid")
         }
     }
@@ -165,11 +186,11 @@
             </a>
         </td>
     `)
-    ExternalModules.addValTypes.emTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
+    module.settings.emTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
 
     // Insert the new form and setup
     $("#val_table").before(html).show()
-    ExternalModules.addValTypes.dataTypes.forEach((el) => $("#dataType").append(new Option(el)))
+    module.settings.dataTypes.forEach((el) => $("#dataType").append(new Option(el)))
     $("#dataType").val("text") // Default
     $("#addValidationForm input").on("keyup", (el) => validateField(el))
     // Populate form with info form URL (Regex Repo)
@@ -182,42 +203,19 @@
     $("#validationAdd").on("click", () => {
         const settings = getForm()
         if (!settings) return
-        $("#validationAdd").prop("disabled", true)
-        $.ajax({
-            method: 'POST',
-            url: ExternalModules.addValTypes.router,
-            data: {
-                ...settings,
-                action: 'add',
-                redcap_csrf_token: ExternalModules.addValTypes.csrf
-            },
-            // Only occurs on network or technical issue
-            error: (jqXHR, textStatus, errorThrown) => console.log(`${JSON.stringify(jqXHR)}\n${textStatus}\n${errorThrown}`),
-            // Response returned from server (possible 500 error still)
-            success: (data) => {
-                console.log(data)
-                if ((typeof data == "string" && data.length === 0)) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Unknown Server Error",
-                        text: "An unknown error has occured and the server has failed to respond."
-                    })
-                    $("#validationAdd").prop("disabled", false)
-                    return
-                }
-                if (data.errors.length) {
-                    let msg = "A server error has prevented the validation type from being added to your Redcap instance."
-                    data.errors.forEach((el) => { msg = msg + '\n' + el })
-                    Swal.fire({
-                        icon: "error",
-                        title: "Unable to add Validation Type",
-                        text: msg
-                    })
-                    $("#validationAdd").prop("disabled", false)
-                    return
-                }
+        const btn = $("#validationAdd");
+        btn.prop("disabled", true)
+        module.ajax("add", settings).then((response) => {
+            if (response.errors.length == 0) {
                 location.reload()
+                return
             }
+            btn.prop("disabled", false)
+            responseError(response.errors,
+                "A server error has prevented the validation type from being added to your Redcap instance.")
+        }).catch((err) => {
+            btn.prop("disabled", false)
+            genericError(err)
         })
     })
 
@@ -227,22 +225,15 @@
         const $row = $el.closest('tr')
         const name = $row.prop("id")
         if (!$el.is(":visible") || name == "") return
-        $.ajax({
-            method: 'POST',
-            url: ExternalModules.addValTypes.router,
-            data: {
-                name: name,
-                action: 'remove',
-                redcap_csrf_token: ExternalModules.addValTypes.csrf
-            },
-            // Only occurs on network or technical issue
-            error: (jqXHR, textStatus, errorThrown) => console.log(`${JSON.stringify(jqXHR)}\n${textStatus}\n${errorThrown}`),
-            // Response returned from server (possible 500 error still)
-            success: (data) => {
-                console.log(data)
-                if ((typeof data == "string" && data.length === 0) || data.errors.length) return
+        module.ajax("remove", { name }).then((response) => {
+            if (response.errors.length == 0) {
                 $row.remove()
+                return;
             }
+            responseError(response.errors,
+                "A server error has prevented the validation type from being removed to your Redcap instance.")
+        }).catch((err) => {
+            genericError(err)
         })
     })
 

@@ -3,7 +3,6 @@
 namespace UWMadison\AddValidationTypes;
 
 use ExternalModules\AbstractExternalModule;
-use RestUtility;
 
 class AddValidationTypes extends AbstractExternalModule
 {
@@ -17,38 +16,33 @@ class AddValidationTypes extends AbstractExternalModule
     public function redcap_control_center()
     {
         if ($this->isPage('ControlCenter/validation_type_setup.php')) {
-            $settings = json_encode($this->loadSettings());
-            echo "<script>ExternalModules.addValTypes = {$settings}</script>";
+            $this->loadSettings();
             echo "<style>#val_table { display:none; }</style>";
             echo "<script src={$this->getUrl("main.js")}></script>";
         }
     }
 
-    public function process()
+    public function redcap_module_ajax($action, $payload)
     {
-        $request = RestUtility::processRequest(false);
-        $params = $request->getRequestVars();
-
-        // Run core code
         $result = ["errors" => ["No valid action"]];
-        if ($params["action"] == "add") {
-            $result = $this->addType($params["display"], $params["internal"], $params["phpRegex"], $params["jsRegex"], $params["dataType"]);
-        } elseif ($params["action"] == "remove") {
-            $result = $this->removeType($params["name"]);
+        if ($action == "add") {
+            $result = $this->addType($payload["display"], $payload["internal"], $payload["phpRegex"], $payload["jsRegex"], $payload["dataType"]);
+        } elseif ($action == "remove") {
+            $result = $this->removeType($payload["name"]);
         }
-        return json_encode($result);
+        return $result;
     }
 
     private function loadSettings()
     {
-        return [
+        $this->initializeJavascriptModuleObject();
+        $settings = json_encode([
             "regex" => $this->inputRegex,
             "emTypes" => $this->emValidationTypes(),
             "validationTypes" => $this->allValidationTypes(),
-            "dataTypes" => $this->allDataTypes(),
-            "csrf"   => $this->getCSRFToken(),
-            "router" => $this->getUrl('router.php')
-        ];
+            "dataTypes" => $this->allDataTypes()
+        ]);
+        echo "<script>{$this->getJavascriptModuleObjectName()}.settings = {$settings}</script>";
     }
 
     private function emValidationTypes()

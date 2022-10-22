@@ -12,8 +12,12 @@
     "permissions": [
         "redcap_control_center"
     ],
-    "framework-version": 10,
+    "auth-ajax-actions": [
+        "add",
+        "remove"
+    ],
+    "framework-version": 11,
     "compatibility": {
-        "redcap-version-min": "12.4.1"
+        "redcap-version-min": "12.5.9"
     }
 }
