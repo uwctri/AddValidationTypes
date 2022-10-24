@@ -94,7 +94,7 @@
         </div>
         <div class="col-4 text-right">
             <a href="${module.settings.repo}" class="btn btn-secondary btn-sm mt-4 mr-2 text-white">RegexRepo</a>
-            <a id="validationAdd" class="btn btn-primary mt-3">Add</a>
+            <a id="validationAdd" class="btn btn-primary mt-3" style="font-size:16px">Add</a>
         </div>
     </div>
 </div>`
@@ -208,7 +208,7 @@
         btn.prop("disabled", true)
         module.ajax("add", settings).then((response) => {
             if (response.errors.length == 0) {
-                location.reload()
+                window.location = window.location.href.split("?")[0]
                 return
             }
             btn.prop("disabled", false)
