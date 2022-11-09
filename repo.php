@@ -93,6 +93,15 @@ $data = [
         "examples" => [],
         "notes" => "Allows colon or dash as delimiter."
     ],
+    [
+        "display" => "Mobile Phone e164 format",
+        "internal" => "mobile_e164",
+        "phpRegex" => "/^\+[1-9]\d{5,13}$/i",
+        "jsRegex" => "/^\+[1-9]\d{5,13}$/i",
+        "dataType" => "phone",
+        "examples" => ["+123456", "+19981231234"],
+        "notes" => ""
+    ],
 ];
 
 if ($localMail) {
