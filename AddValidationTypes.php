@@ -102,7 +102,7 @@ class AddValidationTypes extends AbstractExternalModule
         $allTypes = $this->allValidationTypes();
         $displayNames = array_map(function ($key) use ($allTypes) {
             return str_replace(" ", "", strtolower($allTypes[$key]["display"]));
-        }, $allTypes);
+        }, array_keys($allTypes));
         $trimDisplay = str_replace(" ", "", strtolower($display));
         if (in_array($trimDisplay, $displayNames)) {
             $errors[] = "Display name too similar to existing name";
