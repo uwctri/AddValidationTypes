@@ -18,4 +18,4 @@ Validation types require a display name, a unique internal name, and two regular
 * Additional Regex Repo ideas
   * Integer Range List
   * Various barcode standards
-  * File path
+  * File path (Relative, absolute, linux, windows)
