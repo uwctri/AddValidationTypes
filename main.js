@@ -1,33 +1,15 @@
 (() => {
 
     const module = ExternalModules.UWMadison.AddValidationTypes
-
-    // Small amount of css just for the case sensative toggle
     const css = `
-    .custom-switch.custom-switch-lg {
-        padding-bottom: 1rem;
-        padding-left: 2.25rem;
-    }
-    .custom-switch.custom-switch-lg .custom-control-label {
-        padding-left: 0.75rem;
-        padding-top: 0.15rem;
-    }
-    .custom-switch.custom-switch-lg .custom-control-label::before {
-        border-radius: 1rem;
-        height: 1.5rem;
-        width: 2.5rem;
-    }
-    .custom-switch.custom-switch-lg .custom-control-label::after {
-        border-radius: 0.65rem;
-        height: calc(1.5rem - 4px);
-        width: calc(1.5rem - 4px);
-    }
-    .custom-switch.custom-switch-lg .custom-control-input:checked ~ .custom-control-label::after {
-        transform: translateX(1rem);
-    }
-    a {
+    .validationRemove {
         color: #3e3e3e;
-    }`
+    }
+	.form-switch.form-switch-md .form-check-input {
+		height: 1.5rem;
+		width: calc(2rem + 0.75rem);
+		border-radius: 3rem;
+	}`
 
     // Form to add new validation types
     const html = `
@@ -42,38 +24,30 @@
     </div>
     <div class="form-group">
         <label class="font-weight-bold mb-0" for="phpRegex">PHP Regex 
-            <i class="far fa-question-circle text-secondary" data-container="body" data-toggle="popover-hover" data-content='
+            <i class="far fa-question-circle text-secondary" data-bs-toggle="popover" data-bs-content='
                 REDCap uses regular expressions on both the client (JS) and server (PHP) sides to verify the format of a field. 
                 Sites like <a href="https://regexr.com/">Regexr</a> can be used to design and easily test both JS and PCRE regex, 
                 but as of 2018 there are not many differences between JS and PCRE regex.
             '></i>
         </label> 
         <div class="input-group">
-            <div class="input-group-prepend">
-                <div class="input-group-text">/^</div>
-            </div>
+            <div class="input-group-text">/^</div>
             <input id="phpRegex" name="phpRegex" type="text" class="form-control"> 
-            <div class="input-group-append">
-                <div class="input-group-text">$/</div>
-            </div>
+            <div class="input-group-text">$/</div>
         </div>
     </div>
     <div class="form-group">
         <label class="font-weight-bold mb-0" for="jsRegex">JS Regex</label> 
         <div class="input-group">
-            <div class="input-group-prepend">
-                <div class="input-group-text">/^</div>
-            </div>
+            <div class="input-group-text">/^</div>
             <input id="jsRegex" name="jsRegex" type="text" class="form-control"> 
-            <div class="input-group-append">
-                <div class="input-group-text">$/</div>
-            </div>
+            <div class="input-group-text">$/</div>
         </div>
     </div>
     <div class="form-group row mb-0">
         <div class="col-4">
             <label class="font-weight-bold mb-0" for="dataType">Data Type 
-                <i class="far fa-question-circle text-secondary" data-container="body" data-toggle="popover-hover" data-content='
+                <i class="far fa-question-circle text-secondary" data-bs-toggle="popover" data-bs-content='
                     All validations have a "Data Type" that describes what kind of data is being validated. 
                     The Data Type will determine if a field can be used with certain special functions. 
                     If you are not certain what to use the "text" option is likely the best choice. 
@@ -81,20 +55,20 @@
                 '></i>
             </label> 
             <div>
-                <select id="dataType" name="dataType" class="custom-select">
+                <select id="dataType" name="dataType" class="form-select">
                 </select>
             </div>
         </div>
         <div class="col-4">
             <label class="font-weight-bold mb-0" for="caseSensative">Case Sensative?</label> 
-            <div class="custom-control custom-switch custom-switch-lg">
-                <input name="caseSensative" id="caseSensative" type="checkbox" class="custom-control-input" value=""> 
-                <label for="caseSensative" class="custom-control-label"></label>
+            <div class="form-check form-switch form-switch-md">
+                <input name="caseSensative" id="caseSensative" type="checkbox" class="form-check-input" value=""> 
+                <label for="caseSensative" class="form-check-label"></label>
             </div>
         </div>
         <div class="col-4 text-right">
-            <a href="${module.settings.repo}" class="btn btn-secondary btn-sm mt-4 mr-2 text-white">RegexRepo</a>
-            <a id="validationAdd" class="btn btn-primary mt-3" style="font-size:16px">Add</a>
+            <button onclick="window.location.href='${module.settings.repo}';" class="btn btn-secondary btn-sm mt-4 mr-2 text-white">RegexRepo</button>
+            <button id="validationAdd" class="btn btn-primary mt-3" style="font-size:16px">Add</button>
         </div>
     </div>
 </div>`
@@ -239,18 +213,18 @@
     })
 
     // Setup nice popover functionality
-    $('[data-toggle="popover-hover"]').popover({
-        trigger: 'manual',
-        html: true,
-        animation: false,
-        viewport: '.container'
-    }).on('mouseenter', (el) => {
-        $(el.currentTarget).popover("show")
-        $(".popover").on('mouseleave', () => $(el.currentTarget).popover('hide'))
-    }).on('mouseleave', (el) => {
-        setTimeout(() => {
-            if ($('.popover:hover').length) return
-            $(el.currentTarget).popover('hide')
-        }, 600)
+    let popoverList = [];
+    $('[data-bs-toggle="popover"]').toArray().map((el) => {
+        popoverList.push(new bootstrap.Popover(el, {
+            html: true,
+            trigger: 'hover',
+            delay: {
+                hide: 20000
+            }
+        }))
+    })
+    $("body").on('click', (e) => {
+        if (!$(e.target).hasClass('popover-body'))
+            popoverList.map((pop) => pop.hide())
     })
 })()
