@@ -56,13 +56,12 @@ class AddValidationTypes extends AbstractExternalModule
         // Grab most data from the validation table and format
         $result = [];
         $sql = $this->query("SELECT * FROM redcap_validation_types", []);
-        $dataTypes = $this->allDataTypes();
         while ($row = $sql->fetch_assoc()) {
             // Skip pulling the regex, we won't use it 
             $result[$row["validation_name"]] = [
-                "internal" => htmlspecialchars($row["validation_name"], ENT_QUOTES),
-                "display" => htmlspecialchars($row["validation_label"], ENT_QUOTES),
-                "dataType" => htmlspecialchars($row["data_type"], ENT_QUOTES),
+                "internal" => $this->escape($row["validation_name"]),
+                "display" => $this->escape($row["validation_label"]),
+                "dataType" => $this->escape($row["data_type"]),
                 "visible" => $row["visible"] == 1
             ];
         }
