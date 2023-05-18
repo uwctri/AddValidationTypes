@@ -153,9 +153,11 @@ if ($localMail) {
         <tbody>
             <?php foreach ($data as $row) {
                 $caseSensative = substr($row["phpRegex"], -1) != "i";
-                $phpRegex = substr(substr($row["phpRegex"], 2), 0, $caseSensative ? -2 : -3);
-                $jsRegex = substr(substr($row["jsRegex"], 2), 0, $caseSensative ? -2 : -3);
-                $addUrl = "{$url}displayName=$row[display]&internalName=$row[internal]&phpRegex=$phpRegex&jsRegex=$jsRegex&dataType=$row[dataType]";
+                $phpRegex = urlencode(substr(substr($row["phpRegex"], 2), 0, $caseSensative ? -2 : -3));
+                $jsRegex = urlencode(substr(substr($row["jsRegex"], 2), 0, $caseSensative ? -2 : -3));
+                $display = urlencode($row["display"]);
+                $internal = urlencode($row["internal"]);
+                $addUrl = "{$url}displayName=$display&internalName=$internal&phpRegex=$phpRegex&jsRegex=$jsRegex&dataType=$row[dataType]";
                 $addUrl .= $caseSensative ? "&caseSensative" : "";
                 $examples = count($row["examples"]) > 0 ? "<li>" . implode("</li><li>", $row["examples"]) . "</li>" : "";
                 echo "<tr>
