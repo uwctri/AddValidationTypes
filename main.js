@@ -151,17 +151,24 @@
         }
     }
 
-    // Style old table
+    const styleTable = (mutationList, observer) => {
+        if ($("#val_table tr td").first().attr("colspan") == "4") return // Already styled
+        $("#val_table tr td").first().attr("colspan", "4")
+        $("#val_table tr:not(:first)").append(`
+            <td class="data2" style="text-align:center;font-size:13px">
+                <a class="validationRemove hidden">
+                    <i class="fa-solid fa-trash-can"></i>
+                </a>
+            </td>
+        `)
+        module.settings.emTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
+    };
+
+    // Style old table, watches for changes when enable/disable is clicked (Add delete buttons)
     $("head").append(`<style>${css}</style>`)
-    $("#val_table tr td").first().attr("colspan", "4")
-    $("#val_table tr:not(:first)").append(`
-        <td class="data2" style="text-align:center;font-size:13px">
-            <a class="validationRemove hidden">
-                <i class="fa-solid fa-trash-can"></i>
-            </a>
-        </td>
-    `)
-    module.settings.emTypes.forEach((el) => $(`#${el} a`).removeClass('hidden'))
+    const observer = new MutationObserver(styleTable)
+    observer.observe($("#val_table").get(0), { childList: true, subtree: true })
+    styleTable()
 
     // Insert the new form and setup
     $("#val_table").before(html).show()
@@ -194,7 +201,7 @@
         })
     })
 
-    // Setup old table Interactivity (delete)
+    // Setup old table Interactivity (Delete functionality)
     $("#val_table").on("click", ".validationRemove", (el) => {
         const $el = $(el.currentTarget)
         const $row = $el.closest('tr')
