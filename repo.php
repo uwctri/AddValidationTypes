@@ -13,6 +13,24 @@ $localMail = explode("@", $project_contact_email);
 $localMail = count($localMail) == "2" ? $localMail[1] : "";
 $data = [
     [
+        "display" => "Letters, Numbers, and Spaces",
+        "internal" => "alpha_numeric_space",
+        "phpRegex" => "/^[A-Za-z0-9 ]*$/i",
+        "jsRegex" => "/^[A-Za-z0-9 ]*$/i",
+        "dataType" => "text",
+        "examples" => ["55 examples", "1a 3b"],
+        "notes" => "You may want to add underscores or other characters"
+    ],
+    [
+        "display" => "Letters w/ Spaces",
+        "internal" => "alpha_space",
+        "phpRegex" => "/^[A-Za-z ]*$/i",
+        "jsRegex" => "/^[A-Za-z ]*$/i",
+        "dataType" => "text",
+        "examples" => ["Hello world"],
+        "notes" => ""
+    ],
+    [
         "display" => "Integer List",
         "internal" => "list_integer",
         "phpRegex" => "/^((-*\d+, *)*-*\d+)*$/i",
@@ -38,6 +56,15 @@ $data = [
         "dataType" => "text",
         "examples" => ["0-4", "55-4", "1-5"],
         "notes" => "Spaces are not accepted"
+    ],
+    [
+        "display" => "Four Dash Four ID",
+        "internal" => "id_four_four",
+        "phpRegex" => "/^\d{4}-\d{4}$/i",
+        "jsRegex" => "/^\d{4}-\d{4}$/i",
+        "dataType" => "text",
+        "examples" => ["2020-4444", "1921-3141", "0918-2412"],
+        "notes" => "Example of a possible ID format"
     ],
     [
         "display" => "URL",
@@ -94,12 +121,43 @@ $data = [
         "notes" => "Allows colon or dash as delimiter."
     ],
     [
+        "display" => "Date (Y-M-D, allow missing info)",
+        "internal" => "date_ymd_missing",
+        "phpRegex" => "/^\d{4}-\d{2}-\d{2}$/i",
+        "jsRegex" => "/^\d{4}-\d{2}-\d{2}$/i",
+        "dataType" => "text",
+        "examples" => ["1992-03-00", "0000-00-00"],
+        "notes" => "Allows for any numbers to be used, does not check for valid dates, only format."
+    ],
+    [
         "display" => "Mobile Phone e164 format",
         "internal" => "mobile_e164",
         "phpRegex" => "/^\+[1-9]\d{5,13}$/i",
         "jsRegex" => "/^\+[1-9]\d{5,13}$/i",
         "dataType" => "phone",
         "examples" => ["+123456", "+19981231234"],
+        "notes" => ""
+    ],
+    [
+        "display" => "UDI Barcode",
+        "internal" => "udi_barcode",
+        "phpRegex" => "/^\(01\)\d{14}((\((11|17)\)\d{6})|(\((10|21)\)[A-Z0-9]{1,20}))*$/i",
+        "jsRegex" => "/^\(01\)\d{14}((\((11|17)\)\d{6})|(\((10|21)\)[A-Z0-9]{1,20}))*$/i",
+        "dataType" => "text",
+        "examples" => ["(01)51022222233336
+                        (11)141231
+                        (17)150707
+                        (10)A213B1
+                        (21)1234"],
+        "notes" => ""
+    ],
+    [
+        "display" => "Windows File Path",
+        "internal" => "windows_path",
+        "phpRegex" => "/^(?<drive>[a-zA-Z]:)?(?<path>(?:[\\]?(?:[\w !#()-]+|[.]{1,2})+)*[\\])?(?<filename>(?:[.]?[\w !#()-]+)+)?[.]?$/i",
+        "jsRegex" => "/^(?<drive>[a-zA-Z]:)?(?<path>(?:[\\]?(?:[\w !#()-]+|[.]{1,2})+)*[\\])?(?<filename>(?:[.]?[\w !#()-]+)+)?[.]?$/i",
+        "dataType" => "text",
+        "examples" => ["C:\\foo", "\\foo", "\\foo\\fake.example"],
         "notes" => ""
     ],
 ];
