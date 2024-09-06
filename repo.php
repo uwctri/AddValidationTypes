@@ -15,8 +15,8 @@ $data = [
     [
         "display" => "Letters, Numbers, and Spaces",
         "internal" => "alpha_numeric_space",
-        "phpRegex" => "/^[A-Za-z0-9 ]*$/i",
-        "jsRegex" => "/^[A-Za-z0-9 ]*$/i",
+        "phpRegex" => "/^[A-Z0-9 ]*$/i",
+        "jsRegex" => "/^[A-Z0-9 ]*$/i",
         "dataType" => "text",
         "examples" => ["55 examples", "1a 3b"],
         "notes" => "You may want to add underscores or other characters"
@@ -24,8 +24,8 @@ $data = [
     [
         "display" => "Letters w/ Spaces",
         "internal" => "alpha_space",
-        "phpRegex" => "/^[A-Za-z ]*$/i",
-        "jsRegex" => "/^[A-Za-z ]*$/i",
+        "phpRegex" => "/^[A-Z ]*$/i",
+        "jsRegex" => "/^[A-Z ]*$/i",
         "dataType" => "text",
         "examples" => ["Hello world"],
         "notes" => ""
@@ -114,8 +114,8 @@ $data = [
     [
         "display" => "MAC Address",
         "internal" => "mac_addr",
-        "phpRegex" => "/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/i",
-        "jsRegex" => "/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/i",
+        "phpRegex" => "/^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/i",
+        "jsRegex" => "/^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/i",
         "dataType" => "text",
         "examples" => [],
         "notes" => "Allows colon or dash as delimiter."
@@ -154,12 +154,39 @@ $data = [
     [
         "display" => "Windows File Path",
         "internal" => "windows_path",
-        "phpRegex" => "/^(?<drive>[a-zA-Z]:)?(?<path>(?:[\\]?(?:[\w !#()-]+|[.]{1,2})+)*[\\])?(?<filename>(?:[.]?[\w !#()-]+)+)?[.]?$/i",
-        "jsRegex" => "/^(?<drive>[a-zA-Z]:)?(?<path>(?:[\\]?(?:[\w !#()-]+|[.]{1,2})+)*[\\])?(?<filename>(?:[.]?[\w !#()-]+)+)?[.]?$/i",
+        "phpRegex" => "/^(?<drive>[A-Z]:)?(?<path>(?:[\\]?(?:[\w !#()-]+|[.]{1,2})+)*[\\])?(?<filename>(?:[.]?[\w !#()-]+)+)?[.]?$/i",
+        "jsRegex" => "/^(?<drive>[A-Z]:)?(?<path>(?:[\\]?(?:[\w !#()-]+|[.]{1,2})+)*[\\])?(?<filename>(?:[.]?[\w !#()-]+)+)?[.]?$/i",
         "dataType" => "text",
         "examples" => ["C:\\foo", "\\foo", "\\foo\\fake.example"],
         "notes" => ""
     ],
+    [
+        "display" => "Hex Color Code",
+        "internal" => "color_hex",
+        "phpRegex" => "/^#([A-F0-9]{6}|[A-F0-9]{3})$/i",
+        "jsRegex" => "/^#([A-F0-9]{6}|[A-F0-9]{3})$/i",
+        "dataType" => "text",
+        "examples" => ["#fff", "#D3D3D3", "#A0a0b0"],
+        "notes" => ""
+    ],
+    [
+        "display" => "Example Test",
+        "internal" => "foo",
+        "phpRegex" => "/^#([A-F0-9]{6}|[A-F0-9]{3})$/u",
+        "jsRegex" => "/^#([A-F0-9]{6}|[A-F0-9]{3})$/u",
+        "dataType" => "text",
+        "examples" => [],
+        "notes" => ""
+    ],
+    [
+        "display" => "Letters, Spaces, Hypens (Global)",
+        "internal" => "alpha_space_hyphen_unicode",
+        "phpRegex" => "/^[\p{L}\p{M}\s-]+$/iu",
+        "jsRegex" => "/^[\p{Letter}\p{Mark}\s-]+$/iu",
+        "dataType" => "text",
+        "examples" => ["Adam Núñez", "你好", "こんにちは"],
+        "notes" => ""
+    ]
 ];
 
 if ($localMail) {
@@ -210,13 +237,27 @@ if ($localMail) {
         </thead>
         <tbody>
             <?php foreach ($data as $row) {
-                $caseSensative = substr($row["phpRegex"], -1) != "i";
-                $phpRegex = urlencode(substr(substr($row["phpRegex"], 2), 0, $caseSensative ? -2 : -3));
-                $jsRegex = urlencode(substr(substr($row["jsRegex"], 2), 0, $caseSensative ? -2 : -3));
+                // Cleanup PHP regex
+                $phpRegex = explode("/", substr($row["phpRegex"], 2));
+                array_pop($phpRegex);
+                $phpRegex = urlencode(rtrim(implode("/", $phpRegex), "$"));
+
+                // Cleanup JS regex
+                $jsRegex = explode("/", substr($row["jsRegex"], 2));
+                array_pop($jsRegex);
+                $jsRegex = urlencode(rtrim(implode("/", $jsRegex), "$"));
+
+                // Encode things for URL
+                $flags = end(explode("/", $row["phpRegex"]));
+                $caseSensative = !str_contains($flags, "i");
+                $unicode = str_contains($flags, "u");
                 $display = urlencode($row["display"]);
                 $internal = urlencode($row["internal"]);
+
+                /// Build URL
                 $addUrl = "{$url}displayName=$display&internalName=$internal&phpRegex=$phpRegex&jsRegex=$jsRegex&dataType=$row[dataType]";
                 $addUrl .= $caseSensative ? "&caseSensative" : "";
+                $addUrl .= $unicode ? "&unicode" : "";
                 $examples = count($row["examples"]) > 0 ? "<li>" . implode("</li><li>", $row["examples"]) . "</li>" : "";
                 echo "<tr>
                     <td>$row[display]</td>

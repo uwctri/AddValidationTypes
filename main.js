@@ -9,7 +9,10 @@
 		height: 1.5rem;
 		width: calc(2rem + 0.75rem);
 		border-radius: 3rem;
-	}`
+	}
+    .col-half {
+        width: 20.8325%;
+    }`
 
     // Form to add new validation types
     const html = `
@@ -33,7 +36,7 @@
         <div class="input-group">
             <div class="input-group-text">/^</div>
             <input id="phpRegex" name="phpRegex" type="text" class="form-control"> 
-            <div class="input-group-text">$/</div>
+            <div class="input-group-text suffixFlags">$/</div>
         </div>
     </div>
     <div class="form-group">
@@ -41,7 +44,7 @@
         <div class="input-group">
             <div class="input-group-text">/^</div>
             <input id="jsRegex" name="jsRegex" type="text" class="form-control"> 
-            <div class="input-group-text">$/</div>
+            <div class="input-group-text suffixFlags">$/</div>
         </div>
     </div>
     <div class="form-group row mb-0">
@@ -59,14 +62,21 @@
                 </select>
             </div>
         </div>
-        <div class="col-4">
-            <label class="font-weight-bold mb-0" for="caseSensative">Case Sensative?</label> 
+        <div class="col-2 col-half">
+            <label class="font-weight-bold mb-0" for="caseSensative">Case Sensative</label> 
             <div class="form-check form-switch form-switch-md">
                 <input name="caseSensative" id="caseSensative" type="checkbox" class="form-check-input" value=""> 
                 <label for="caseSensative" class="form-check-label"></label>
             </div>
         </div>
-        <div class="col-4 text-right">
+        <div class="col-2 col-half">
+            <label class="font-weight-bold mb-0" for="unicode">Unicode</label> 
+            <div class="form-check form-switch form-switch-md">
+                <input name="unicode" id="unicode" type="checkbox" class="form-check-input" value=""> 
+                <label for="unicode" class="form-check-label"></label>
+            </div>
+        </div>
+        <div class="col-3 text-right">
             <button onclick="window.location.href='${module.settings.repo}';" class="btn btn-secondary btn-sm mt-4 mr-2 text-white">RegexRepo</button>
             <button id="validationAdd" class="btn btn-primary mt-3" style="font-size:16px">Add</button>
         </div>
@@ -101,6 +111,7 @@
         let jsRegex = $("#jsRegex").val()
         const dataType = $("#dataType").val()
         const caseSensative = $("#caseSensative").is(":checked")
+        const unicode = $("#unicode").is(":checked")
 
         if (!display || !internal || !phpRegex || !jsRegex) return false
         if ($("#addValidationForm .is-invalid").length) return false
@@ -111,6 +122,11 @@
         if (!caseSensative) {
             phpRegex += "i"
             jsRegex += "i"
+        }
+
+        if (unicode) {
+            phpRegex += "u"
+            jsRegex += "u"
         }
 
         return {
@@ -175,9 +191,11 @@
     module.settings.dataTypes.forEach((el) => $("#dataType").append(new Option(el)))
     $("#dataType").val("text") // Default
     $("#addValidationForm input").on("keyup", (el) => validateField(el))
+
     // Populate form with info form URL (Regex Repo)
     for (const [name, value] of (new URLSearchParams(window.location.search)).entries()) {
         if (name == "caseSensative") $("#caseSensative").prop("checked", true)
+        if (name == "unicode") $("#unicode").prop("checked", true)
         $(`#addValidationForm #${name}`).val(value).trigger("keyup")
     }
 
@@ -200,6 +218,21 @@
             genericError(err)
         })
     })
+
+    // Setup flag toggles
+    const updateFlags = () => {
+        const unicode = $("#unicode").is(":checked")
+        const caseSensative = $("#caseSensative").is(":checked")
+        let text = "$/"
+        if (!caseSensative)
+            text += "i"
+        if (unicode)
+            text += "u"
+        $(".suffixFlags").text(text)
+    }
+    $("#caseSensative, #unicode").on("click", updateFlags)
+    updateFlags()
+
 
     // Setup old table Interactivity (Delete functionality)
     $("#val_table").on("click", ".validationRemove", (el) => {
