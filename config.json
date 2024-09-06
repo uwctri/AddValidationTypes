@@ -13,8 +13,8 @@
         "add",
         "remove"
     ],
-    "framework-version": 12,
+    "framework-version": 14,
     "compatibility": {
-        "redcap-version-min": "13.4.9"
+        "redcap-version-min": "13.7.3"
     }
 }
