@@ -170,13 +170,22 @@ $data = [
         "notes" => ""
     ],
     [
-        "display" => "Example Test",
-        "internal" => "foo",
-        "phpRegex" => "/^#([A-F0-9]{6}|[A-F0-9]{3})$/u",
-        "jsRegex" => "/^#([A-F0-9]{6}|[A-F0-9]{3})$/u",
+        "display" => "Time (12hr)",
+        "internal" => "time_str_12",
+        "phpRegex" => "/^([1-9]|[0][1-9]|[1][0-2]):([0-5][0-9])(|(| )(am|pm|AM|PM))$/",
+        "jsRegex" => "/^([1-9]|[0][1-9]|[1][0-2]):([0-5][0-9])(|(| )(am|pm|AM|PM))$/",
         "dataType" => "text",
-        "examples" => [],
-        "notes" => ""
+        "examples" => ["03:45 pm", "12:00 AM", "9:00pm", "1:12"],
+        "notes" => "This is a plain text version of a 12 hour time format. It cannot be used with normal time-related action tags or calculations."
+    ],
+    [
+        "display" => "Japanese Hiragana",
+        "internal" => "jp_hiragana",
+        "phpRegex" => "/^[ぁ-んー゛゜ゝゞ]*$/u",
+        "jsRegex" => "/^[ぁ-んー゛゜ゝゞ]*$/u",
+        "dataType" => "text",
+        "examples" => ["みずようかん"],
+        "notes" => "ひらがなのみ。（あ〜ん、濁音、破擦音、長音記号、小文字の全角ひらがなも含む）"
     ],
     [
         "display" => "Letters, Spaces, Hypens (Global)",
