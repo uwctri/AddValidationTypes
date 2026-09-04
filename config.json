@@ -1,6 +1,6 @@
 {
     "name": "Add Validation Types",
-    "description": "Add and Remove custom validation types at the system admin level",
+    "description": "<b>This module has been largely deprecated as the core functionality was incorporated into REDCap 17.4.0.</b><br>Add and Remove custom validation types at the system admin level. Includes a small one-click-install list of useful validation types.",
     "namespace": "UWMadison\\AddValidationTypes",
     "authors": [
         {
@@ -13,7 +13,7 @@
         "add",
         "remove"
     ],
-    "framework-version": 14,
+    "framework-version": 16,
     "compatibility": {
         "redcap-version-min": "13.7.3"
     }
